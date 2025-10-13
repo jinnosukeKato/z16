@@ -34,7 +34,9 @@ module Z16Decoder(
   function get_rd_wen;
     input [15:0] i_instr;
     begin
-      if(4'hA == i_instr[3:0]) begin
+      if(i_instr[3:0] <= 4'h8) begin
+        get_rd_wen = 1'b1;
+      end else if(4'hA == i_instr[3:0]) begin
         get_rd_wen = 1'b1;
       end else begin
         get_rd_wen = 1'b0;
@@ -57,8 +59,8 @@ module Z16Decoder(
   function [3:0] get_alu_ctrl;
     input [15:0] i_instr;
     begin
-      if(4'hA == i_instr[3:0] || 4'hB == i_instr[3:0]) begin
-        get_alu_ctrl = 4'h0;
+      if (i_instr[3:0] <= 4'h8) begin
+        get_alu_ctrl = i_instr[3:0];
       end else begin
         get_alu_ctrl = 4'h0;
       end
