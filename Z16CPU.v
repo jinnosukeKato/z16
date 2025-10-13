@@ -60,7 +60,7 @@ module Z16CPU(
     .i_rd_wen(w_rd_wen)
   );
 
-  assign w_data_b = (w_opcode << 8'h8) ? w_rs2_data : w_imm;
+  assign w_data_b = (w_opcode <= 8'h8) ? w_rs2_data : w_imm;
   Z16ALU ALU(
     .i_data_a(w_rs1_data),
     .i_data_b(w_data_b),
