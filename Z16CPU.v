@@ -1,6 +1,8 @@
 module Z16CPU(
   input wire i_clk,
-  input wire i_rst
+  input wire i_rst,
+  input wire i_button,
+  output reg [5:0] o_led
 );
 
   reg [15:0] r_pc; // プログラムカウンタ
@@ -65,7 +67,13 @@ module Z16CPU(
     input [15:0] i_alu_data;
     begin
       case(i_opcode)
-        4'hA : select_rd_data = i_mem_rdata;
+        4'hA : begin
+          if (w_alu_data == 16'h007C) begin
+            select_rd_data = {15'b000_0000_0000_0000, i_button};
+          end else begin
+            select_rd_data  = i_mem_rdata;
+          end
+        end
         4'hC : select_rd_data = i_pc + 16'h0002;
         4'hD : select_rd_data = i_pc + 16'h0002;
         default : select_rd_data = i_alu_data;
@@ -99,4 +107,16 @@ module Z16CPU(
     .i_data(w_rs2_data),
     .o_data(w_mem_rdata)
   );
+
+  // MMIO
+  always @(posedge i_clk) begin
+    // LED
+    if (i_rst) begin
+      o_led <= 6'd0;
+    end else if (w_mem_wen && (w_alu_data == 16'h007A)) begin
+      o_led <= w_rs2_data[5:0];
+    end else begin
+      o_led <= o_led;
+    end
+  end
 endmodule
